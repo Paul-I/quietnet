@@ -1,3 +1,4 @@
+#This is just import new stuff to the program you are making
 import Queue
 import threading
 import time
@@ -8,6 +9,7 @@ import options
 import sys
 import psk
 
+#This is just telling the computer what you want in the program and what functions you want the program to have.
 FORMAT = pyaudio.paInt16
 frame_length = options.frame_length
 chunk = options.chunk
@@ -16,6 +18,7 @@ rate = options.rate
 sigil = [int(x) for x in options.sigil]
 frames_per_buffer = chunk * 10
 
+#This is just setting the distance for the program from what number, python programing is mostly based on numbers so you will see this kind of stuff alot.
 in_length = 4000
 # raw audio frames
 in_frames = Queue.Queue(in_length)
@@ -23,6 +26,7 @@ in_frames = Queue.Queue(in_length)
 points = Queue.Queue(in_length)
 bits = Queue.Queue(in_length / frame_length)
 
+#This is just telling the program how many seconds it should wait before it loads the next direction.
 wait_for_sample_timeout = 0.1
 wait_for_frames_timeout = 0.1
 wait_for_point_timeout = 0.1
@@ -31,6 +35,7 @@ wait_for_byte_timeout = 0.1
 # yeeeep this is just hard coded
 bottom_threshold = 8000
 
+#This is when you bring a new thing so you are telling the computer what the function of the new thing is, and a loop which keeps the program running without ending.
 def process_frames():
     while True:
         try:
@@ -50,6 +55,7 @@ def process_points():
             except Queue.Empty:
                 time.sleep(wait_for_point_timeout)
 
+#This is loop, it keeps the program running without ending. The rest of the stuff is just telling the computer it functions and what to do.
         while True:
             while np.average(cur_points) > bottom_threshold:
                 try:
@@ -70,6 +76,7 @@ def process_points():
                 break
         print("")
 
+#Here is where you tell the program what to do when someone input something
         last_bits = []
         while True:
             if len(cur_points) == frame_length:
@@ -86,7 +93,7 @@ def process_points():
                 cur_points.append(points.get(False))
             except Queue.Empty:
                 time.sleep(wait_for_point_timeout)
-
+#Same thing bring a new thing to make and making it while loop with no end until you quit
 def process_bits():
     while True:
         cur_bits = []
@@ -107,7 +114,7 @@ for process in processes:
     thread = threading.Thread(target=process)
     thread.daemon = True
     thread.start()
-
+#
 def callback(in_data, frame_count, time_info, status):
     frames = list(quietnet.chunks(quietnet.unpack(in_data), chunk))
     for frame in frames:
@@ -115,6 +122,7 @@ def callback(in_data, frame_count, time_info, status):
             in_frames.put(frame, False)
     return (in_data, pyaudio.paContinue)
 
+#Just like I said earlier here is introducing a new function to the program
 def start_analysing_stream():
     p = pyaudio.PyAudio()
     stream = p.open(format=FORMAT, channels=options.channels, rate=options.rate,
